@@ -6,8 +6,9 @@ from flask.ext.moment import Moment
 from flask.ext.wtf import Form
 from wtforms import StringField, SubmitField
 from wtforms.validators import Required
+import requests
 
-basedir = os.path.abspath(os.path.dirname(__file__))
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'something secret'
@@ -25,26 +26,47 @@ class LogInForm(Form):
 	submit = SubmitField('Login')
 
 
+class SignUpForm(Form):
+	email = StringField('email', validators=[Required()])
+	password = StringField('password', validators=[Required()])
+	submit = SubmitField('SIGNUP')
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
 	form = LogInForm()
 	if form.validate_on_submit():
-		#old_name = session.get('name')
-		#if old_name is not None and old_name != form.name.data:
-		#	flash('Looks like you have changed your name!')
 		
-		#get data from wtforms
+
 		session['email'] = form.email.data
 		session['password'] = form.password.data
-		flash('submitted your info!')
 	
-		form.name.data = ''
 
-		return redirect(url_for('index'))
+		data = {'email':session['email'], 'password':session['password']}
+		
+		if requests.get('http://hosting.otterlabs.org/huynhbrian/piazzahack/Login.php', data).text == '{"loginApproved":true}':
+			return redirect("http://www.google.com")		
 	
-	return render_template('index.html', form=form, name=session.get('name'))
+		else:
+			return redirect(url_for('index'))
+	
+	return render_template('index.html', form=form)
 
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+	form = SignUpForm()
+	if form.validate_on_submit():
+		session['email'] = form.email.data
+		session['password'] = form.password.data
+
+		data = {'email':session['email'], 'password':session['password']}
+
+		requests.post('http://hosting.otterlabs.org/huynhbrian/piazzahack/Signup.php', data)
+
+		return redirect(url_for('profile'))
+
+	return render_template('signup.html', form=form)
 
 
 @app.route('/profile')
@@ -53,7 +75,7 @@ def profile():
 	
 
 	#return render_template('profile.html', username=username, error_id_list=error_id_list, error_type_list=error_type_list, etc...)
-	pass
+	return render_template('profile.html')
 
 #nicer error handling
 #REMEMBER TO ADD 404.html

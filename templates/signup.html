@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}Index{% endblock %}
+{% block title %}Sign-Up Page{% endblock %}
 
 {% block page_content %}
 <div class="page-header">
-	<h1 class="text-center">ERROR-TUNITY</h1>
+	<h1 class="text-center">NEW TO ERROR-TUNITY? SIGN-UP BELOW</h1>
 </div>
 
 <div class="row">
 	<img class="img-responsive center-block" style="padding-bottom:100px;" src="http://placekitten.com/450/300" alt="Error-Tunity Logo"></div>
 </div>
 
-<div class="row">
+<div class="row" style="padding-bottom:10%;">
 	<div class="col-lg-2"></div>
 	<div class="col-lg-8">
 		{{ wtf.quick_form(form) }}
@@ -20,12 +20,6 @@
 	<div class="col-lg-2"></div>
 </div>
 
-
-<h2 style="padding-top:100px; margin-bottom:50px;" class="text-center">New To Error-Tunity?</h2>
-
-<button type="button" style="margin-bottom:10%" class="btn btn-lg center-block">
-		<a href="http://localhost:5000/signup">Sign-Up!</a>
-</button>
 
 {% endblock %}
 

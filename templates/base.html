@@ -6,7 +6,6 @@
 {{ super() }}
 <link rel="shortcut icon" href="{{ url_for('static', filename = 'favicon.ico') }}" type="image/x-icon">
 <link rel="icon" href="{{ url_for('static', filename = 'favicon.ico') }}" type="image/x-icon">
-<link rel="stylesheet" href="/Users/petergriggs/Projects/piazza_app/css/style.css">
 {% endblock %}
 
 {% block navbar %}
@@ -41,12 +40,12 @@
 	
 	<!-- This is the page content, separate from the flashing message which appears under certain conditions -->
 	{% block page_content %}{% endblock %}
-
+	
+	<!--
 	<div id="footer">
-        	<div class="container">
-        		<p class="muted credit">Made by <a href="https://github.com/tvnerd">Brian Huynh</a> , <a href="https://github.com/katherinehuwu">Katherine Wu</a> and <a href="https://github.com/peterg17">Peter Griggs</a> . </p>
-        	</div>
+        	<p>Made by <a href="https://github.com/tvnerd">Brian Huynh</a> , <a href="https://github.com/katherinehuwu">Katherine Wu</a> and <a href="https://github.com/peterg17">Peter Griggs</a> . </p>
 	</div>
+	-->
 
 </div>
 {% endblock %}
