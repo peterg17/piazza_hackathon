@@ -6,17 +6,11 @@ from flask.ext.moment import Moment
 from flask.ext.wtf import Form
 from wtforms import StringField, SubmitField
 from wtforms.validators import Required
-from flask.ext.sqlalchemy import SQLAlchemy
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'something secret'
-app.config['SQLALCHEMY_DATABASE_URI'] =\
-	'sqlite:///' + os.path.join(basedir, 'data.sqlite')
-app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
-
-db = SQLAlchemy(app)
 
 
 #initializing the imported modules
@@ -24,62 +18,42 @@ manager = Manager(app)
 bootstrap = Bootstrap(app)
 moment = Moment(app)
 
-#defines the roles table using SQLAlchemy ORM
-class Role(db.Model):
-	__tablename__ = 'roles'
-	id = db.Column(db.Integer, primary_key=True)
-	name = db.Column(db.String(64), unique=True)
-	
-	#defining relationship with users table
-	users= db.relationship('User', backref='role')
 
-	def __repr__(self):
-		return '<Role %r>' % self.name
-
-#defines the users table using SQLAlchemy ORM
-class User(db.Model):
-	__tablename__ = 'users'
-	id = db.Column(db.Integer, primary_key=True)
-	username = db.Column(db.String(64), unique=True, index=True)
-
-	#defining relationship iwth the roles table
-	rold_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
-
-	def __repr__(self):
-		return '<User %r>' % self.username
-
-
-class NameForm(Form):
-	name = StringField('What is your name?', validators=[Required()])
-	submit = SubmitField('Submit')
+class LogInForm(Form):
+	email = StringField('email', validators=[Required()])
+	password = StringField('password', validators=[Required()])
+	submit = SubmitField('Login')
 
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-	form = NameForm()
+	form = LogInForm()
 	if form.validate_on_submit():
-		old_name = session.get('name')
-		if old_name is not None and old_name != form.name.data:
-			flash('Looks like you have changed your name!')
-		session['name'] = form.name.data
+		#old_name = session.get('name')
+		#if old_name is not None and old_name != form.name.data:
+		#	flash('Looks like you have changed your name!')
+		
+		#get data from wtforms
+		session['email'] = form.email.data
+		session['password'] = form.password.data
+		flash('submitted your info!')
+	
 		form.name.data = ''
+
 		return redirect(url_for('index'))
+	
 	return render_template('index.html', form=form, name=session.get('name'))
 
 
 
-@app.route('/user/<id>')
-def get_user(id):
-	user = load_user(id)
-	if not user:
-		abort(404)
-	return '<h1>Hello, %s</h1>' % user.name
+@app.route('/profile')
+def profile():
+	#put in profile-specific stuff and nice graphs
+	
 
-@app.route('/user/magic')
-def google():
-	return redirect('http://www.google.com')
-
+	#return render_template('profile.html', username=username, error_id_list=error_id_list, error_type_list=error_type_list, etc...)
+	pass
 
 #nicer error handling
 #REMEMBER TO ADD 404.html
