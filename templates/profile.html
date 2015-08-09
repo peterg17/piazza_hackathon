@@ -5,7 +5,41 @@
 
 {% block page_content %}
 <div class="page-header">
-	<h1 class="text-center">COMING SOON!</h1>
+	<h1 class="text-left">Hello, {%if name%}{{ name }}{% else %}Student{% endif %}</h1>
+</div>
+
+
+<div class="row">
+	<h2>Here is some information about your Learning History</h2>
+</div>
+
+<div class="table-responsive">
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Id #</th>
+				<th>Error Type</th>
+				<th>Error Message</th>
+				<th>Solution Link</th>
+			</tr>
+			
+		</thead>
+	
+		
+		<tbody>
+		{% for error in json %}
+			<tr>
+				<th>{{ error['errorID'] }} </th>
+				<th>{{ error['errorType'] }} </th>
+				<th>{{ error['errorMessage'] }}</th>
+				<th>{{ error['solutionComments'] }}</th>
+			</tr>
+		{% endfor %}	
+
+		</tbody>
+	
+			
+	</table>
 </div>
 
 

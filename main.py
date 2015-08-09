@@ -1,6 +1,7 @@
+import re
 import os
-from flask import Flask, render_template,session, redirect, url_for, flash
-from flask.ext.script import Manager
+from flask import Flask, render_template,session, redirect, url_for, flash, request
+from flask.ext.runner import Runner
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.moment import Moment
 from flask.ext.wtf import Form
@@ -15,7 +16,7 @@ app.config['SECRET_KEY'] = 'something secret'
 
 
 #initializing the imported modules
-manager = Manager(app)
+runner = Runner(app)
 bootstrap = Bootstrap(app)
 moment = Moment(app)
 
@@ -43,10 +44,11 @@ def index():
 	
 
 		data = {'email':session['email'], 'password':session['password']}
-		
-		if requests.get('http://hosting.otterlabs.org/huynhbrian/piazzahack/Login.php', data).text == '{"loginApproved":true}':
-			return redirect("http://www.google.com")		
 	
+		if requests.get('http://hosting.otterlabs.org/huynhbrian/piazzahack/Login.php', data).text == '{"loginApproved":true}':
+			json = requests.get("http://hosting.otterlabs.org/huynhbrian/piazzahack/Home.php", {"username":session["email"]}).json()
+						
+			return render_template('profile.html', name=session['email'], json=json)		
 		else:
 			return redirect(url_for('index'))
 	
@@ -60,30 +62,34 @@ def signup():
 		session['email'] = form.email.data
 		session['password'] = form.password.data
 
+
 		data = {'email':session['email'], 'password':session['password']}
 
 		requests.post('http://hosting.otterlabs.org/huynhbrian/piazzahack/Signup.php', data)
 
-		return redirect(url_for('profile'))
+		json = requests.get("http://hosting.otterlabs.org/huynhbrian/piazzahack/Home.php", {'username':session['email']}).json()
+
+		return render_template('profile.html', name=session['email'], json=json)
 
 	return render_template('signup.html', form=form)
 
 
-@app.route('/profile')
+@app.route('/profile', methods=['GET', 'POST'])
 def profile():
-	#put in profile-specific stuff and nice graphs
+	#get the username from the session's redirect args
+	json = requests.get("http://hosting.otterlabs.org/huynhbrian/piazzahack/Home.php", {"username":session["email"]}).json()
 	
-
 	#return render_template('profile.html', username=username, error_id_list=error_id_list, error_type_list=error_type_list, etc...)
-	return render_template('profile.html')
+	return render_template('profile.html', name="Peter", json=json)
+
+
+
 
 #nicer error handling
-#REMEMBER TO ADD 404.html
 @app.errorhandler(404)
 def page_not_found(e):
 	return render_template('404.html'), 404
 
-#REMEMBER TO ADD 500.html
 @app.errorhandler(500)
 def internal_server_error(e):
 	return render_template('500.html'), 500
@@ -91,7 +97,7 @@ def internal_server_error(e):
 
 
 if __name__ == '__main__':
-	manager.run()
+	runner.run()
 
 
 
